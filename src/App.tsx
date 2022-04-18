@@ -1,4 +1,12 @@
-import { Box, Container, Grid, Paper, Button } from "@mui/material";
+import {
+  Box,
+  AppBar,
+  Typography,
+  Container,
+  Grid,
+  Paper,
+  Button,
+} from "@mui/material";
 import { useEffect, useState, VFC } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -36,8 +44,13 @@ const App: VFC = () => {
   }
 
   return (
-    <Box sx={{ backgroundColor: "#f5f5f5", py: 3 }}>
-      <Container>
+    <Box sx={{ backgroundColor: "#f5f5f5" }}>
+      <AppBar position="static">
+        <Typography variant="h3" component="div" sx={{ p: 2, pl: 2 }}>
+          {content.title}
+        </Typography>
+      </AppBar>
+      <Container sx={{ py: 3 }}>
         <Grid container rowSpacing={2}>
           {Object.entries(content.markdownContent).map(
             ([key, data]): JSX.Element => {
