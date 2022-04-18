@@ -11,20 +11,9 @@ import { useEffect, useState, VFC } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import getDocument from "./api/api";
+import { documentObject } from "./type";
 
 const App: VFC = () => {
-  type documentObject = {
-    title: string;
-    id: string;
-    url: string;
-    markdownContent: {
-      lead?: string[];
-      procedure?: string[];
-      question: string[];
-    };
-    options: { label: string; next: string }[];
-  };
-
   const [content, setContent] = useState<documentObject | null>(null);
 
   const handleDocumentChange = (next: string) => {
