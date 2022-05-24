@@ -1,11 +1,22 @@
-const getDocument = async(queryId: string) => {
-    const response = await fetch(
-      `/document.json`
-    );
-    const data = await response.json();
-    for (const document of data) {
-        if (document.id === queryId) return document;
-    }
-}
+import db from "../firebase/firebase";
+import { collection, getDocs } from "firebase/firestore";
+import { documentObject } from "../type";
+import documentConverter from "../util";
+
+const getDocument = async (queryId: string): Promise<documentObject> => {
+  const collRef = collection(db, "documents").withConverter(documentConverter);
+  const snapshot = await getDocs(collRef);
+  const res: documentObject | undefined = snapshot.docs
+    .find((doc) => doc.data().id === queryId)
+    ?.data();
+  if (res === undefined) {
+    console.error(queryId);
+    alert(`${queryId} document isnt exist`);
+    throw new Error(`${queryId} document isnt exist`);
+  }
+  return res;
+};
 
 export default getDocument;
+
+// return data.docs.find((doc) => doc.data().id === queryId).data()
