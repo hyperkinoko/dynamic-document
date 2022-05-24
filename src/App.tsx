@@ -17,14 +17,14 @@ const App: VFC = () => {
   const [content, setContent] = useState<documentObject | null>(null);
 
   const handleDocumentChange = (next: string) => {
-    getDocument(next).then((document) => {
+    getDocument(next).then((document: documentObject) => {
       setContent(document);
     });
   };
 
   useEffect(() => {
-    getDocument("1").then((data: documentObject) => {
-      setContent(data);
+    getDocument("1").then((document: documentObject) => {
+      setContent(document);
     });
   }, []);
 
