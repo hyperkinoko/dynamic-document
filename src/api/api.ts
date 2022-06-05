@@ -1,14 +1,11 @@
 import db from "../firebase/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { documentObject } from "../type";
 import documentConverter from "../util";
 
 const getDocument = async (queryId: string): Promise<documentObject> => {
-  const collRef = collection(db, "documents").withConverter(documentConverter);
-  const snapshot = await getDocs(collRef);
-  const res: documentObject | undefined = snapshot.docs
-    .find((doc) => doc.data().id === queryId)
-    ?.data();
+  const docRef = doc(db, "documents", queryId).withConverter(documentConverter);
+  const res = await getDoc(docRef).then((document) => document.data());
   if (res === undefined) {
     console.error(queryId);
     alert(`${queryId} document isnt exist`);
