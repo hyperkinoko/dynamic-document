@@ -41,44 +41,58 @@ const App: VFC = () => {
       </AppBar>
       <Container sx={{ py: 3 }}>
         <Grid container rowSpacing={2}>
-          {Object.entries(content.markdownContent).map(
-            ([key, data]): JSX.Element => {
-              return (
-                <Grid item xs={12} key={key}>
-                  <Paper elevation={5} sx={{ p: 2 }}>
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {data.join("\n")}
-                    </ReactMarkdown>
-                    {key === "question" && (
-                      <Grid container columnSpacing={2}>
-                        {content.options.map(({ label, next }, key) => {
-                          return (
-                            <Grid
-                              item
-                              xs={4}
-                              key={key}
-                              sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Button
-                                variant="contained"
-                                onClick={() => handleDocumentChange(next)}
-                              >
-                                {label}
-                              </Button>
-                            </Grid>
-                          );
-                        })}
-                      </Grid>
-                    )}
-                  </Paper>
-                </Grid>
-              );
-            }
+          {content.markdownContent.lead && (
+            <Grid item xs={12}>
+              <Paper elevation={5} sx={{ p: 2 }}>
+                <ReactMarkdown
+                  children={content.markdownContent.lead}
+                  remarkPlugins={[remarkGfm]}
+                />
+              </Paper>
+            </Grid>
           )}
+          {content.markdownContent.procedure && (
+            <Grid item xs={12}>
+              <Paper elevation={5} sx={{ p: 2 }}>
+                <ReactMarkdown
+                  children={content.markdownContent.procedure}
+                  remarkPlugins={[remarkGfm]}
+                />
+              </Paper>
+            </Grid>
+          )}
+
+          <Grid item xs={12}>
+            <Paper elevation={5} sx={{ p: 2 }}>
+              <ReactMarkdown
+                children={content.markdownContent.question}
+                remarkPlugins={[remarkGfm]}
+              />
+              <Grid container columnSpacing={2}>
+                {content.options.map(({ label, next }, key) => {
+                  return (
+                    <Grid
+                      item
+                      xs={4}
+                      key={key}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Button
+                        variant="contained"
+                        onClick={() => handleDocumentChange(next)}
+                      >
+                        {label}
+                      </Button>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </Paper>
+          </Grid>
         </Grid>
       </Container>
     </Box>
