@@ -34,9 +34,9 @@ const documentConverter: FirestoreDataConverter<documentObject> = {
       id: data.id,
       url: data.url,
       markdownContent: {
-        lead: data.markdownContent.lead,
-        procedure: data.markdownContent.procedure,
-        question: data.markdownContent.question,
+        lead: data.markdownContent.lead?.replace("\\n", "\n\n"),
+        procedure: data.markdownContent.procedure?.replace("\\n", "\n\n"),
+        question: data.markdownContent.question.replace("\\n", "\n\n"),
       },
       options: data.options,
     };
@@ -58,7 +58,7 @@ const isValid = (data: any): data is documentObject => {
   if (
     !(
       !data.markdownContent.lead ||
-      typeof data.markdownContent.lead === "object"
+      typeof data.markdownContent.lead === "string"
     )
   ) {
     return false;
@@ -66,7 +66,7 @@ const isValid = (data: any): data is documentObject => {
   if (
     !(
       !data.markdownContent.procedure ||
-      typeof data.markdownContent.procedure === "object"
+      typeof data.markdownContent.procedure === "string"
     )
   ) {
     return false;
@@ -74,7 +74,7 @@ const isValid = (data: any): data is documentObject => {
   if (
     !(
       data.markdownContent.question &&
-      typeof data.markdownContent.question === "object"
+      typeof data.markdownContent.question === "string"
     )
   ) {
     return false;
