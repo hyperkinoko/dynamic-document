@@ -8,8 +8,8 @@ const getDocument = async (queryId: string): Promise<documentObject> => {
   const res = await getDoc(docRef).then((document) => document.data());
   if (res === undefined) {
     console.error(queryId);
-    alert(`${queryId} document isnt exist`);
-    throw new Error(`${queryId} document isnt exist`);
+    alert(`${queryId} document doesn't exist`);
+    throw new Error(`${queryId} document doesn't exist`);
   }
   return res;
 };
