@@ -6,7 +6,7 @@ import {
 } from "firebase/firestore";
 import { documentObject } from "./type";
 
-const documentConverter: FirestoreDataConverter<documentObject> = {
+export const documentConverter: FirestoreDataConverter<documentObject> = {
   toFirestore(data: documentObject): DocumentData {
     return {
       title: data.title,
@@ -84,5 +84,3 @@ const isValid = (data: any): data is documentObject => {
   }
   return true;
 };
-
-export default documentConverter;

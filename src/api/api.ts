@@ -1,9 +1,9 @@
-import db from "../firebase/firebase";
+import { db } from "../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { documentObject } from "../type";
-import documentConverter from "../util";
+import { documentConverter } from "../util";
 
-const getDocument = async (queryId: string): Promise<documentObject> => {
+export const getDocument = async (queryId: string): Promise<documentObject> => {
   const docRef = doc(db, "documents", queryId).withConverter(documentConverter);
   const res = await getDoc(docRef).then((document) => document.data());
   if (res === undefined) {
@@ -13,5 +13,3 @@ const getDocument = async (queryId: string): Promise<documentObject> => {
   }
   return res;
 };
-
-export default getDocument;

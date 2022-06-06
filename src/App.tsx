@@ -10,7 +10,7 @@ import {
 import { useEffect, useState, VFC } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import getDocument from "./api/api";
+import { getDocument } from "./api/api";
 import { documentObject } from "./type";
 
 const App: VFC = () => {
