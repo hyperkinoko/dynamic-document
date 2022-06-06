@@ -3,9 +3,9 @@ export type documentObject = {
   id: string;
   url: string;
   markdownContent: {
-    lead?: string[];
-    procedure?: string[];
-    question: string[];
+    lead?: string;
+    procedure?: string;
+    question: string;
   };
   options: { label: string; next: string }[];
 };
