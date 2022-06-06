@@ -15,5 +15,3 @@ const getDocument = async (queryId: string): Promise<documentObject> => {
 };
 
 export default getDocument;
-
-// return data.docs.find((doc) => doc.data().id === queryId).data()
