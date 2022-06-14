@@ -1,13 +1,37 @@
-import { VFC } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState, VFC } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { authState } from "./hooks/Auth";
 import { Home } from "./pages/Home";
+import { Login } from "./pages/Login";
+import { NotFound } from "./pages/NotFound";
 
 export const App: VFC = () => {
+  const setAuth = useSetRecoilState(authState);
+  const auth = useRecoilValue(authState);
+  const [isLoading, setIsLoading] = useState<Boolean>(true);
+
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setAuth(user);
+      }
+    });
+    setIsLoading(false);
+  }, [setAuth]);
+
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
+      {isLoading ? (
+        <></>
+      ) : (
+        <Routes>
+          <Route path="/" element={auth ? <Home /> : <Login />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      )}
     </BrowserRouter>
   );
 };
