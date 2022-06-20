@@ -10,13 +10,11 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useState, VFC } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { authState } from "../hooks/Auth";
 
 export const Login: VFC = () => {
   const setAuth = useSetRecoilState(authState);
-  const nav = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -29,11 +27,12 @@ export const Login: VFC = () => {
           .then((auth) => {
             if (auth.user) {
               setAuth(auth.user);
-              nav("/");
             }
           })
-          .catch((e) => {
+          .catch(() => {
             alert(`user doesn't exist`);
+          })
+          .finally(() => {
             setEmail("");
             setPassword("");
             setLoading(false);
