@@ -1,7 +1,8 @@
 import DOMPurify from "dompurify";
 import { marked } from "marked";
+import { memo } from "react";
 
-export const MarkdownViewer = ({ buf }: { buf: string }) => {
+export const MarkdownViewer = memo(({ buf }: { buf: string }) => {
   return (
     <div
       dangerouslySetInnerHTML={{
@@ -9,4 +10,4 @@ export const MarkdownViewer = ({ buf }: { buf: string }) => {
       }}
     />
   );
-};
+});
