@@ -31,8 +31,6 @@ export const Login: VFC = () => {
           })
           .catch(() => {
             alert(`user doesn't exist`);
-          })
-          .finally(() => {
             setEmail("");
             setPassword("");
             setLoading(false);
