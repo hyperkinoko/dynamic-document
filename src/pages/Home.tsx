@@ -8,10 +8,9 @@ import {
   Button,
 } from "@mui/material";
 import { useEffect, useState, VFC } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { getDocument } from "../api/api";
 import { documentObject } from "../type";
+import { MarkdownViewer } from "../components/MarkdownViewer";
 
 export const Home: VFC = () => {
   const [content, setContent] = useState<documentObject | null>(null);
@@ -44,30 +43,21 @@ export const Home: VFC = () => {
           {content.markdownContent.lead && (
             <Grid item xs={12}>
               <Paper elevation={5} sx={{ p: 2 }}>
-                <ReactMarkdown
-                  children={content.markdownContent.lead}
-                  remarkPlugins={[remarkGfm]}
-                />
+                <MarkdownViewer buf={content.markdownContent.lead} />
               </Paper>
             </Grid>
           )}
           {content.markdownContent.procedure && (
             <Grid item xs={12}>
               <Paper elevation={5} sx={{ p: 2 }}>
-                <ReactMarkdown
-                  children={content.markdownContent.procedure}
-                  remarkPlugins={[remarkGfm]}
-                />
+                <MarkdownViewer buf={content.markdownContent.procedure} />
               </Paper>
             </Grid>
           )}
 
           <Grid item xs={12}>
             <Paper elevation={5} sx={{ p: 2 }}>
-              <ReactMarkdown
-                children={content.markdownContent.question}
-                remarkPlugins={[remarkGfm]}
-              />
+              <MarkdownViewer buf={content.markdownContent.question} />
               <Grid container columnSpacing={2}>
                 {content.options.map(({ label, next }, key) => {
                   return (
