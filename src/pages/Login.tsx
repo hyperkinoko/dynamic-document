@@ -5,7 +5,6 @@ import { lightGreen } from "@mui/material/colors";
 import {
   browserSessionPersistence,
   getAuth,
-  inMemoryPersistence,
   setPersistence,
   signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -22,7 +21,7 @@ export const Login: VFC = () => {
   const handleLogin = async () => {
     try {
       const auth = getAuth();
-      setPersistence(auth, inMemoryPersistence).then(() => {
+      setPersistence(auth, browserSessionPersistence).then(() => {
         signInWithEmailAndPassword(auth, email, password)
           .then((auth) => {
             if (auth.user) {
