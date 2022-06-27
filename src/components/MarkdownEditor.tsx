@@ -1,13 +1,13 @@
 import "easymde/dist/easymde.min.css";
-import { Dispatch, SetStateAction, useMemo } from "react";
+import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import SimpleMde from "react-simplemde-editor";
 import { Options } from "easymde";
 
-export const MarkdownEditor = ({
-  setFunction,
-}: {
+type Props = {
   setFunction: Dispatch<SetStateAction<string>>;
-}) => {
+};
+
+export const MarkdownEditor: FC<Props> = ({ setFunction }) => {
   const options = useMemo((): Options => {
     return {
       maxHeight: "200px",

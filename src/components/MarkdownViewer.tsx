@@ -1,8 +1,10 @@
 import DOMPurify from "dompurify";
 import { marked } from "marked";
-import { memo } from "react";
+import { FC, memo } from "react";
 
-export const MarkdownViewer = memo(({ buf }: { buf: string }) => {
+type Props = { buf: string };
+
+export const MarkdownViewer: FC<Props> = memo(({ buf }) => {
   return (
     <div
       dangerouslySetInnerHTML={{
