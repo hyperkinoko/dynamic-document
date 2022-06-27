@@ -1,35 +1,53 @@
-import { Box, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography, TextField } from "@mui/material";
 import { useState, VFC } from "react";
+import { CheckboxLabels } from "../components/CheckboxLabels";
+import { InputAccordion } from "../components/InputAccordion";
 import { MarkdownEditor } from "../components/MarkdownEditor";
 import { MarkdownViewer } from "../components/MarkdownViewer";
 
 export const CreateDocument: VFC = () => {
+  const [title, setTitle] = useState<string>("");
   const [lead, setLead] = useState<string>("");
   const [procedure, setProcedure] = useState<string>("");
   const [question, setQuestion] = useState<string>("");
+  const [labels, setLabels] = useState<string[]>([
+    "はい",
+    "いいえ",
+    "わからない",
+  ]);
 
   return (
     <Box sx={{ p: 2 }}>
       <Grid container columnSpacing={2}>
         <Grid item xs={6}>
-          <Grid item xs={12}>
-            <Typography variant={"h4"} sx={{ py: 1 }}>
-              リード
-            </Typography>
-            <MarkdownEditor setFunction={setLead} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant={"h4"} sx={{ py: 1 }}>
-              手順
-            </Typography>
-            <MarkdownEditor setFunction={setProcedure} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant={"h4"} sx={{ py: 1 }}>
-              質問
-            </Typography>
-            <MarkdownEditor setFunction={setQuestion} />
-          </Grid>
+          <InputAccordion
+            displayText={"タイトル"}
+            component={
+              <TextField
+                label="タイトル"
+                variant="standard"
+                fullWidth
+                required
+                autoComplete="off"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                sx={{ py: 1 }}
+              />
+            }
+          />
+          <InputAccordion
+            displayText={"リード"}
+            component={<MarkdownEditor setFunction={setLead} />}
+          />
+          <InputAccordion
+            displayText={"手順"}
+            component={<MarkdownEditor setFunction={setProcedure} />}
+          />
+          <InputAccordion
+            displayText={"質問"}
+            component={<MarkdownEditor setFunction={setQuestion} />}
+            options={<CheckboxLabels labels={labels} />}
+          />
         </Grid>
         <Grid item xs={6} sx={{ height: "100%" }}>
           <Typography variant={"h4"} sx={{ py: 1 }}>
