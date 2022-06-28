@@ -1,6 +1,6 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState, VFC } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState } from "./hooks/Auth";
 import { CreateDocument } from "./pages/CreateDocument";
@@ -8,9 +8,18 @@ import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { NotFound } from "./pages/NotFound";
 
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+  const auth = useRecoilValue(authState);
+  return auth ? children : <Navigate to="/login" />;
+};
+
+const GuestRoute = ({ children }: { children: JSX.Element }) => {
+  const auth = useRecoilValue(authState);
+  return auth ? <Navigate to="/" /> : children;
+};
+
 export const App: VFC = () => {
   const setAuth = useSetRecoilState(authState);
-  const auth = useRecoilValue(authState);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
 
   useEffect(() => {
@@ -29,8 +38,30 @@ export const App: VFC = () => {
         <></>
       ) : (
         <Routes>
-          <Route path="/" element={auth ? <Home /> : <Login />} />
-          <Route path="/edit" element={auth ? <CreateDocument /> : <Login />} />
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/edit"
+            element={
+              <PrivateRoute>
+                <CreateDocument />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <GuestRoute>
+                <Login />
+              </GuestRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       )}
