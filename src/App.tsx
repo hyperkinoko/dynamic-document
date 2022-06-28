@@ -4,7 +4,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState } from "./hooks/Auth";
 import { CreateDocument } from "./pages/CreateDocument";
-import { Home } from "./pages/Home";
+import { Admin } from "./pages/Admin";
+import { ViewDocument } from "./pages/ViewDocument";
 import { Login } from "./pages/Login";
 import { NotFound } from "./pages/NotFound";
 
@@ -15,7 +16,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
 
 const GuestRoute = ({ children }: { children: JSX.Element }) => {
   const auth = useRecoilValue(authState);
-  return auth ? <Navigate to="/" /> : children;
+  return auth ? <Navigate to="/admin" /> : children;
 };
 
 export const App: VFC = () => {
@@ -38,11 +39,20 @@ export const App: VFC = () => {
         <></>
       ) : (
         <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route
-            path="/"
+            path="/admin"
             element={
               <PrivateRoute>
-                <Home />
+                <Admin />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/view"
+            element={
+              <PrivateRoute>
+                <ViewDocument />
               </PrivateRoute>
             }
           />

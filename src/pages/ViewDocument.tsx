@@ -12,7 +12,7 @@ import { getDocument } from "../api/api";
 import { documentObject } from "../type";
 import { MarkdownViewer } from "../components/MarkdownViewer";
 
-export const Home: VFC = () => {
+export const ViewDocument: VFC = () => {
   const [content, setContent] = useState<documentObject | null>(null);
 
   const handleDocumentChange = (next: string) => {
