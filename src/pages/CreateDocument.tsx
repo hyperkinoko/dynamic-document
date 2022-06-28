@@ -61,7 +61,7 @@ export const CreateDocument: VFC = () => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Grid container columnSpacing={2}>
+      <Grid container columnSpacing={2} sx={{ pb: "60px" }}>
         <Grid item xs={6}>
           <InputAccordion
             displayText={"タイトル"}
