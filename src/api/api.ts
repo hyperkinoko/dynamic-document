@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { documentObject } from "../type";
 import { documentConverter } from "../util";
 
@@ -12,4 +12,20 @@ export const getDocument = async (queryId: string): Promise<documentObject> => {
     throw new Error(`${queryId} document doesn't exist`);
   }
   return res;
+};
+
+export const saveDocument = async (
+  document: documentObject,
+  queryId: string
+) => {
+  try {
+    await setDoc(
+      doc(db, "documents", queryId).withConverter(documentConverter),
+      document
+    );
+    alert("success");
+  } catch (e) {
+    alert("error");
+    console.error("Error adding document: ", e);
+  }
 };

@@ -1,20 +1,58 @@
-import { Box, Grid, Paper, Typography, TextField } from "@mui/material";
+import {
+  AppBar,
+  Button,
+  Box,
+  Grid,
+  Paper,
+  Toolbar,
+  Typography,
+  TextField,
+} from "@mui/material";
 import { useState, VFC } from "react";
+import { saveDocument } from "../api/api";
 import { CheckboxLabels } from "../components/CheckboxLabels";
 import { InputAccordion } from "../components/InputAccordion";
 import { MarkdownEditor } from "../components/MarkdownEditor";
 import { MarkdownViewer } from "../components/MarkdownViewer";
+import { documentObject } from "../type";
+import { isValid } from "../util";
 
 export const CreateDocument: VFC = () => {
   const [title, setTitle] = useState<string>("");
   const [lead, setLead] = useState<string>("");
   const [procedure, setProcedure] = useState<string>("");
   const [question, setQuestion] = useState<string>("");
-  const [labels, setLabels] = useState<string[]>([
-    "はい",
-    "いいえ",
-    "わからない",
+  const [labels, setLabels] = useState<[string, boolean][]>([
+    ["はい", true],
+    ["いいえ", true],
+    ["わからない", true],
   ]);
+
+  const handleSubmit = async () => {
+    const id: string = "4";
+    const options: { label: string; next: string }[] = [];
+    let cnt = 1;
+    for (const [label, flag] of labels) {
+      if (flag) {
+        options.push({ label, next: `${cnt}` });
+        cnt += 1;
+      }
+    }
+
+    const data: documentObject = {
+      title,
+      url: "link",
+      id,
+      markdownContent: {
+        lead,
+        procedure,
+        question,
+      },
+      options,
+    };
+    if (isValid(data)) saveDocument(data, id);
+    else console.error(data);
+  };
 
   return (
     <Box sx={{ p: 2 }}>
@@ -24,7 +62,6 @@ export const CreateDocument: VFC = () => {
             displayText={"タイトル"}
             component={
               <TextField
-                label="タイトル"
                 variant="standard"
                 fullWidth
                 required
@@ -46,7 +83,7 @@ export const CreateDocument: VFC = () => {
           <InputAccordion
             displayText={"質問"}
             component={<MarkdownEditor setFunction={setQuestion} />}
-            options={<CheckboxLabels labels={labels} />}
+            options={<CheckboxLabels labels={labels} setLabels={setLabels} />}
           />
         </Grid>
         <Grid item xs={6} sx={{ height: "100%" }}>
@@ -74,6 +111,14 @@ export const CreateDocument: VFC = () => {
           )}
         </Grid>
       </Grid>
+      <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
+        <Toolbar>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button color="inherit" onClick={() => handleSubmit()}>
+            save
+          </Button>
+        </Toolbar>
+      </AppBar>
     </Box>
   );
 };
