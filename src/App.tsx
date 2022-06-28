@@ -19,8 +19,8 @@ export const App: VFC = () => {
       if (user) {
         setAuth(user);
       }
+      setIsLoading(false);
     });
-    setIsLoading(false);
   }, [setAuth]);
 
   return (
