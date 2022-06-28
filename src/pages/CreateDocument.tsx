@@ -9,6 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useState, VFC } from "react";
+import { useNavigate } from "react-router-dom";
 import { saveDocument } from "../api/api";
 import { CheckboxLabels } from "../components/CheckboxLabels";
 import { InputAccordion } from "../components/InputAccordion";
@@ -27,6 +28,7 @@ export const CreateDocument: VFC = () => {
     ["いいえ", true],
     ["わからない", true],
   ]);
+  const nav = useNavigate();
 
   const handleSubmit = async () => {
     const id: string = "4";
@@ -50,7 +52,10 @@ export const CreateDocument: VFC = () => {
       },
       options,
     };
-    if (isValid(data)) saveDocument(data, id);
+    if (isValid(data))
+      saveDocument(data, id).then(() => {
+        nav("/admin", { replace: true });
+      });
     else console.error(data);
   };
 
