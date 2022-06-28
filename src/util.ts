@@ -44,16 +44,17 @@ export const documentConverter: FirestoreDataConverter<documentObject> = {
 };
 
 // ユーザー定義型ガード
-const isValid = (data: any): data is documentObject => {
+export const isValid = (data: any): data is documentObject => {
+  const missingData: string[] = [];
   if (data == null) return false;
   if (!(data.title && typeof data.title === "string")) {
-    return false;
+    missingData.push("タイトル");
   }
   if (!(data.id && typeof data.id === "string")) {
-    return false;
+    missingData.push("id");
   }
   if (!(data.url && typeof data.url === "string")) {
-    return false;
+    missingData.push("url");
   }
   if (
     !(
@@ -61,7 +62,7 @@ const isValid = (data: any): data is documentObject => {
       typeof data.markdownContent.lead === "string"
     )
   ) {
-    return false;
+    missingData.push("リード");
   }
   if (
     !(
@@ -69,7 +70,7 @@ const isValid = (data: any): data is documentObject => {
       typeof data.markdownContent.procedure === "string"
     )
   ) {
-    return false;
+    missingData.push("手順");
   }
   if (
     !(
@@ -77,10 +78,24 @@ const isValid = (data: any): data is documentObject => {
       typeof data.markdownContent.question === "string"
     )
   ) {
-    return false;
+    missingData.push("質問");
   }
-  if (!(data.options && typeof data.options === "object")) {
-    return false;
+  if (
+    !(
+      data.options &&
+      data.options.length !== 0 &&
+      typeof data.options === "object"
+    )
+  ) {
+    missingData.push("質問の回答");
   }
-  return true;
+  if (missingData.length !== 0) {
+    alert(`次の項目が不足しています
+    ${missingData}
+    `);
+    console.error(missingData);
+    return false;
+  } else {
+    return true;
+  }
 };
