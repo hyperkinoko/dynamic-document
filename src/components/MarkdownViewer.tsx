@@ -1,4 +1,4 @@
-import DOMPurify from "dompurify";
+import { sanitize } from "dompurify";
 import { marked } from "marked";
 import { FC, memo } from "react";
 
@@ -8,7 +8,7 @@ export const MarkdownViewer: FC<Props> = memo(({ buf }) => {
   return (
     <div
       dangerouslySetInnerHTML={{
-        __html: DOMPurify.sanitize(marked(buf)),
+        __html: sanitize(marked(buf)),
       }}
     />
   );
