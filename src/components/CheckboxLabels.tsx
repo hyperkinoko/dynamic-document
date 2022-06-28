@@ -1,4 +1,4 @@
-import { FC, memo, useMemo } from "react";
+import { FC, memo, useMemo, Dispatch, SetStateAction, useEffect } from "react";
 import {
   FormGroup,
   FormControlLabel,
@@ -7,17 +7,30 @@ import {
 } from "@mui/material";
 
 type Props = {
-  labels: string[];
+  labels: [string, boolean][];
+  setLabels: Dispatch<SetStateAction<[string, boolean][]>>;
 };
 
-export const CheckboxLabels: FC<Props> = memo(({ labels }) => {
+export const CheckboxLabels: FC<Props> = memo(({ labels, setLabels }) => {
   const checkboxGroup = useMemo(() => {
     return (
       <FormGroup>
-        {labels.map((name, idx) => {
+        {labels.map(([name, flag], idx) => {
           return (
             <FormControlLabel
-              control={<Checkbox defaultChecked />}
+              control={
+                <Checkbox
+                  checked={flag}
+                  onChange={() =>
+                    setLabels(
+                      labels.map(([tar, flag], idx) => {
+                        const res = tar === name ? !flag : flag;
+                        return [tar, res];
+                      })
+                    )
+                  }
+                />
+              }
               key={idx}
               label={name}
             />
