@@ -11,17 +11,23 @@ import { useEffect, useState, VFC } from "react";
 import { getDocument } from "../api/api";
 import { documentObject } from "../type";
 import { MarkdownViewer } from "../components/MarkdownViewer";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const ViewDocument: VFC = () => {
   const location = useLocation();
+  const nav = useNavigate();
   const [content, setContent] = useState<documentObject | null>(null);
   const [queryId, setQueryId] = useState<string>(location.state as string);
 
   useEffect(() => {
-    getDocument(queryId).then((document: documentObject) => {
-      setContent(document);
-    });
+    if (queryId !== null) {
+      getDocument(queryId).then((document: documentObject) => {
+        setContent(document);
+      });
+    } else {
+      alert(`無効なドキュメントです id:${queryId}`);
+      nav("/admin", { replace: true });
+    }
   }, [queryId]);
 
   if (content === null) {
