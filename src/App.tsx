@@ -11,12 +11,12 @@ import { NotFound } from "./pages/NotFound";
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const auth = useRecoilValue(authState);
-  return auth ? children : <Navigate to="/login" />;
+  return auth ? children : <Navigate to="/login" replace={true} />;
 };
 
 const GuestRoute = ({ children }: { children: JSX.Element }) => {
   const auth = useRecoilValue(authState);
-  return auth ? <Navigate to="/admin" /> : children;
+  return auth ? <Navigate to="/admin" replace={true} /> : children;
 };
 
 export const App: VFC = () => {
