@@ -119,8 +119,10 @@ export const CreateDocument: VFC = () => {
       <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />
-          <Button color="inherit" onClick={() => handleSubmit()}>
-            save
+          <Button color="inherit" onClick={handleSubmit}>
+            <Typography variant={"h6"} sx={{ p: 1 }}>
+              sign in
+            </Typography>
           </Button>
         </Toolbar>
       </AppBar>
