@@ -11,21 +11,18 @@ import { useEffect, useState, VFC } from "react";
 import { getDocument } from "../api/api";
 import { documentObject } from "../type";
 import { MarkdownViewer } from "../components/MarkdownViewer";
+import { useLocation } from "react-router-dom";
 
 export const ViewDocument: VFC = () => {
+  const location = useLocation();
   const [content, setContent] = useState<documentObject | null>(null);
-
-  const handleDocumentChange = (next: string) => {
-    getDocument(next).then((document: documentObject) => {
-      setContent(document);
-    });
-  };
+  const [queryId, setQueryId] = useState<string>(location.state as string);
 
   useEffect(() => {
-    getDocument("1").then((document: documentObject) => {
+    getDocument(queryId).then((document: documentObject) => {
       setContent(document);
     });
-  }, []);
+  }, [queryId]);
 
   if (content === null) {
     return <h1>Loading...</h1>;
@@ -73,7 +70,7 @@ export const ViewDocument: VFC = () => {
                     >
                       <Button
                         variant="contained"
-                        onClick={() => handleDocumentChange(next)}
+                        onClick={() => setQueryId(next)}
                       >
                         {label}
                       </Button>
