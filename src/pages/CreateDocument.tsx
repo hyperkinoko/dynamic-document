@@ -61,9 +61,17 @@ export const CreateDocument: VFC = () => {
     else console.error(data);
   };
 
+  const handleGetDraft = async () => {};
+
   useEffect(() => {
-    getAllDocuments().then((docs: string[][]) => {
-      setTitleSets(docs);
+    getAllDocuments("documents").then((data) => {
+      setTitleSets(
+        data.map((doc) => {
+          const title: string = doc.title;
+          const id: string = doc.id;
+          return [title, id];
+        })
+      );
     });
   }, []);
 
@@ -126,6 +134,11 @@ export const CreateDocument: VFC = () => {
       </Grid>
       <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
         <Toolbar>
+          <Button color="inherit" onClick={handleGetDraft}>
+            <Typography variant={"h6"} sx={{ p: 1 }}>
+              下書きを呼び出す
+            </Typography>
+          </Button>
           <Box sx={{ flexGrow: 1 }} />
           <Button color="inherit" onClick={() => handleSubmit("drafts")}>
             <Typography variant={"h6"} sx={{ p: 1 }}>

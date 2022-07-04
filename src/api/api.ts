@@ -10,14 +10,14 @@ import {
 import { documentObject } from "../type";
 import { documentConverter } from "../util";
 
-export const getAllDocuments = async (): Promise<string[][]> => {
-  const querySnapshot = await getDocs(collection(db, "documents"));
+export const getAllDocuments = async (
+  collectionName: string
+): Promise<documentObject[]> => {
+  const querySnapshot = await getDocs(
+    collection(db, collectionName).withConverter(documentConverter)
+  );
   // TODO:タイトルに重複がある場合どうする
-  const data: string[][] = querySnapshot.docs.map((doc) => {
-    const title: string = doc.data().title;
-    const id: string = doc.data().id;
-    return [title, id];
-  });
+  const data = querySnapshot.docs.map((doc) => doc.data());
   return data;
 };
 
