@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, addDoc } from "firebase/firestore";
 import { documentObject } from "../type";
 import { documentConverter } from "../util";
 
@@ -16,14 +16,15 @@ export const getDocument = async (queryId: string): Promise<documentObject> => {
 
 export const saveDocument = async (
   document: documentObject,
-  queryId: string
-) => {
+  collectionName: string
+): Promise<void> => {
   try {
-    await setDoc(
-      doc(db, "documents", queryId).withConverter(documentConverter),
+    const docRef = await addDoc(
+      collection(db, collectionName).withConverter(documentConverter),
       document
     );
     alert("success");
+    console.log("Document written with ID: ", docRef.id);
   } catch (e) {
     alert("error");
     console.error("Error adding document: ", e);
