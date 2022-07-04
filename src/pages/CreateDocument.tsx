@@ -8,9 +8,9 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
-import { useState, VFC } from "react";
+import { useEffect, useState, VFC } from "react";
 import { useNavigate } from "react-router-dom";
-import { saveDocument } from "../api/api";
+import { getAllDocuments, saveDocument } from "../api/api";
 import { CheckboxLabels } from "../components/CheckboxLabels";
 import { InputAccordion } from "../components/InputAccordion";
 import { MarkdownEditor } from "../components/MarkdownEditor";
@@ -28,9 +28,11 @@ export const CreateDocument: VFC = () => {
     ["いいえ", true],
     ["わからない", true],
   ]);
+  const [titleSets, setTitleSets] = useState<string[][]>();
   const nav = useNavigate();
 
   const handleSubmit = async (collectionName: string) => {
+    const id: string = "1";
     const options: { label: string; next: string }[] = [];
     let cnt = 1;
     for (const [label, flag] of labels) {
@@ -42,6 +44,7 @@ export const CreateDocument: VFC = () => {
 
     const data: documentObject = {
       title,
+      id,
       url: "link",
       markdownContent: {
         lead,
@@ -57,6 +60,12 @@ export const CreateDocument: VFC = () => {
       });
     else console.error(data);
   };
+
+  useEffect(() => {
+    getAllDocuments().then((docs: string[][]) => {
+      setTitleSets(docs);
+    });
+  }, []);
 
   return (
     <Box sx={{ p: 2 }}>
