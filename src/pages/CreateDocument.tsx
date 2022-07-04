@@ -30,8 +30,7 @@ export const CreateDocument: VFC = () => {
   ]);
   const nav = useNavigate();
 
-  const handleSubmit = async () => {
-    const id: string = "4";
+  const handleSubmit = async (collectionName: string) => {
     const options: { label: string; next: string }[] = [];
     let cnt = 1;
     for (const [label, flag] of labels) {
@@ -44,7 +43,6 @@ export const CreateDocument: VFC = () => {
     const data: documentObject = {
       title,
       url: "link",
-      id,
       markdownContent: {
         lead,
         procedure,
@@ -52,8 +50,9 @@ export const CreateDocument: VFC = () => {
       },
       options,
     };
-    if (isValid(data))
-      saveDocument(data, id).then(() => {
+    // documentsに保存するときは整合性チェックを行う
+    if (collectionName !== "documents" || isValid(data))
+      saveDocument(data, collectionName).then(() => {
         nav("/admin", { replace: true });
       });
     else console.error(data);
@@ -119,9 +118,14 @@ export const CreateDocument: VFC = () => {
       <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />
-          <Button color="inherit" onClick={handleSubmit}>
+          <Button color="inherit" onClick={() => handleSubmit("drafts")}>
             <Typography variant={"h6"} sx={{ p: 1 }}>
-              sign in
+              下書きに保存する
+            </Typography>
+          </Button>
+          <Button color="inherit" onClick={() => handleSubmit("documents")}>
+            <Typography variant={"h6"} sx={{ p: 1 }}>
+              保存する
             </Typography>
           </Button>
         </Toolbar>
