@@ -1,7 +1,24 @@
 import { db } from "../firebase/firebase";
-import { collection, doc, getDoc, addDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { documentObject } from "../type";
 import { documentConverter } from "../util";
+
+export const getAllDocuments = async (): Promise<string[]> => {
+  const querySnapshot = await getDocs(collection(db, "documents"));
+  // TODO:タイトルに重複がある場合どうする
+  const data: string[] = querySnapshot.docs.map((doc) => {
+    console.log(doc.data());
+    return "a";
+  });
+  return data;
+};
 
 export const getDocument = async (queryId: string): Promise<documentObject> => {
   const docRef = doc(db, "documents", queryId).withConverter(documentConverter);
@@ -23,6 +40,9 @@ export const saveDocument = async (
       collection(db, collectionName).withConverter(documentConverter),
       document
     );
+    await updateDoc(docRef, {
+      id: docRef.id,
+    });
     alert("success");
     console.log("Document written with ID: ", docRef.id);
   } catch (e) {

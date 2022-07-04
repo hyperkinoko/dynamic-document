@@ -1,5 +1,6 @@
 export type documentObject = {
   title: string;
+  id: string;
   url: string;
   markdownContent: {
     lead?: string;
