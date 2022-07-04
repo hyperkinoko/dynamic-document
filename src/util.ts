@@ -10,7 +10,6 @@ export const documentConverter: FirestoreDataConverter<documentObject> = {
   toFirestore(data: documentObject): DocumentData {
     return {
       title: data.title,
-      id: data.id,
       url: data.url,
       markdownContent: {
         lead: data.markdownContent.lead,
@@ -31,7 +30,6 @@ export const documentConverter: FirestoreDataConverter<documentObject> = {
     }
     return {
       title: data.title,
-      id: data.id,
       url: data.url,
       markdownContent: {
         lead: data.markdownContent.lead?.replace("\\n", "\n\n"),
@@ -49,9 +47,6 @@ export const isValid = (data: any): data is documentObject => {
   if (data == null) return false;
   if (!(data.title && typeof data.title === "string")) {
     missingData.push("タイトル");
-  }
-  if (!(data.id && typeof data.id === "string")) {
-    missingData.push("id");
   }
   if (!(data.url && typeof data.url === "string")) {
     missingData.push("url");
