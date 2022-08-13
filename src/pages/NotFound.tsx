@@ -1,5 +1,5 @@
-import { VFC } from "react";
+import { FC } from "react";
 
-export const NotFound: VFC = () => {
+export const NotFound: FC = (): JSX.Element => {
   return <h1>Not Found 404.....</h1>;
 };
