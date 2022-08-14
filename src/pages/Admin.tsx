@@ -29,7 +29,7 @@ export const Admin: VFC = () => {
             elevation={5}
             sx={{ p: 2 }}
             onClick={() => {
-              nav("/view", { state: "1" });
+              nav("/view", { state: "fLlvvfjKSr5sYq4vNHZz" });
             }}
           >
             <Typography variant={"h5"} sx={{ p: 2 }}>
