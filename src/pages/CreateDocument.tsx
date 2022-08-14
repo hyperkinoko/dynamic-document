@@ -8,7 +8,7 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
-import { useEffect, useState, VFC } from "react";
+import { useEffect, useState, FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllDocuments, saveDocument } from "../api/api";
 import { CheckboxLabels } from "../components/CheckboxLabels";
@@ -18,27 +18,28 @@ import { MarkdownViewer } from "../components/MarkdownViewer";
 import { documentObject } from "../type";
 import { isValid } from "../util";
 
-export const CreateDocument: VFC = () => {
+export const CreateDocument: FC = (): JSX.Element => {
   const [title, setTitle] = useState<string>("");
   const [lead, setLead] = useState<string>("");
   const [procedure, setProcedure] = useState<string>("");
   const [question, setQuestion] = useState<string>("");
-  const [labels, setLabels] = useState<[string, boolean][]>([
-    ["はい", true],
-    ["いいえ", true],
-    ["わからない", true],
+  const [labels, setLabels] = useState<[string, boolean, string][]>([
+    ["はい", false, "未定"],
+    ["いいえ", false, "未定"],
   ]);
-  const [titleSets, setTitleSets] = useState<string[][]>();
+  const [titleSets, setTitleSets] = useState<{ [key: string]: string }>({});
+
   const nav = useNavigate();
 
   const handleSubmit = async (collectionName: string) => {
     const id: string = "1";
     const options: { label: string; next: string }[] = [];
-    let cnt = 1;
-    for (const [label, flag] of labels) {
+    for (const [label, flag, destination] of labels) {
       if (flag) {
-        options.push({ label, next: `${cnt}` });
-        cnt += 1;
+        options.push({
+          label,
+          next: destination !== "未定" ? destination : "",
+        });
       }
     }
 
@@ -61,17 +62,18 @@ export const CreateDocument: VFC = () => {
     else console.error(data);
   };
 
+  // 下書きを呼び出す
   const handleGetDraft = async () => {};
 
   useEffect(() => {
     getAllDocuments("documents").then((data) => {
-      setTitleSets(
-        data.map((doc) => {
-          const title: string = doc.title;
-          const id: string = doc.id;
-          return [title, id];
-        })
-      );
+      const res: { [key: string]: string } = { 未定: "未定" };
+      for (const doc of data) {
+        const title: string = doc.title;
+        const id: string = doc.id;
+        res[id] = title;
+      }
+      setTitleSets(res);
     });
   }, []);
 
@@ -104,7 +106,13 @@ export const CreateDocument: VFC = () => {
           <InputAccordion
             displayText={"質問"}
             component={<MarkdownEditor setFunction={setQuestion} />}
-            options={<CheckboxLabels labels={labels} setLabels={setLabels} />}
+            options={
+              <CheckboxLabels
+                labels={labels}
+                setLabels={setLabels}
+                titleSets={titleSets}
+              />
+            }
           />
         </Grid>
         <Grid item xs={6} sx={{ height: "100%" }}>
