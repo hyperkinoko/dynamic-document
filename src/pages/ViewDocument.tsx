@@ -1,28 +1,44 @@
 import {
-  Box,
   AppBar,
-  Typography,
+  Box,
+  Button,
   Container,
   Grid,
+  IconButton,
   Paper,
-  Button,
+  Toolbar,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState, VFC } from "react";
 import { getDocument } from "../api/api";
 import { documentObject } from "../type";
 import { MarkdownViewer } from "../components/MarkdownViewer";
 import { useLocation, useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import HomeIcon from "@mui/icons-material/Home";
 
 export const ViewDocument: VFC = () => {
-  const [content, setContent] = useState<documentObject | null>(null);
-  const location = useLocation();
   const nav = useNavigate();
+  const location = useLocation();
   const initId: string = location.state as string;
+  const [content, setContent] = useState<documentObject | null>(null);
+  const [docHistory, setDocHistory] = useState<documentObject[]>([]);
 
-  const handleClicked = (id: string): void => {
+  const handleMove = (id: string): void => {
     if (!!id) {
+      // docHistoryに存在した場合dbにアクセスはしない
+      // documentがループすることがあるか？
+      for (const doc of docHistory) {
+        if (doc.id === id) {
+          setContent(doc);
+          setDocHistory([...docHistory, doc]);
+          return;
+        }
+      }
+      // docHistoryに存在しなかった場合dbにアクセスする
       getDocument(id).then((document: documentObject) => {
         setContent(document);
+        setDocHistory([...docHistory, document]);
       });
     } else {
       if (id === "") {
@@ -33,10 +49,18 @@ export const ViewDocument: VFC = () => {
     }
   };
 
+  const handleBack = (): void => {
+    // 1つ前のドキュメントを参照
+    // 末尾に入っているのは現在のdocumentなので、slice(-2)でok
+    setContent(docHistory.slice(-2)[0]);
+    setDocHistory(docHistory.slice(0, -1));
+  };
+
   useEffect(() => {
     if (!!initId) {
       getDocument(initId).then((document: documentObject) => {
         setContent(document);
+        setDocHistory([document]);
       });
     } else {
       if (initId === "") {
@@ -48,16 +72,47 @@ export const ViewDocument: VFC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    console.log(docHistory);
+  }, [docHistory]);
+
   return (
-    <Box sx={{ backgroundColor: "#f5f5f5" }}>
+    <>
       {content === null ? (
         <div>loading...</div>
       ) : (
-        <>
+        <Box sx={{ backgroundColor: "#f5f5f5" }}>
           <AppBar position="static">
-            <Typography variant="h3" component="div" sx={{ p: 2, pl: 2 }}>
-              {content.title}
-            </Typography>
+            <Toolbar>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ pl: 2 }}
+                disabled={docHistory.length <= 1}
+                onClick={handleBack}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{ p: 2, flexGrow: 1 }}
+              >
+                {content.title}
+              </Typography>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ pr: 2 }}
+                onClick={() => nav("/", { replace: true })}
+              >
+                <HomeIcon />
+              </IconButton>
+            </Toolbar>
           </AppBar>
           <Container sx={{ py: 3 }}>
             <Grid container rowSpacing={2}>
@@ -94,7 +149,7 @@ export const ViewDocument: VFC = () => {
                         >
                           <Button
                             variant="contained"
-                            onClick={() => handleClicked(next)}
+                            onClick={() => handleMove(next)}
                           >
                             {label}
                           </Button>
@@ -106,8 +161,8 @@ export const ViewDocument: VFC = () => {
               </Grid>
             </Grid>
           </Container>
-        </>
+        </Box>
       )}
-    </Box>
+    </>
   );
 };
