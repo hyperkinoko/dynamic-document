@@ -1,4 +1,6 @@
 import { FC, memo, Dispatch, SetStateAction, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { allDocumentsState } from "../atoms/AllDocumentsData";
 import {
   Box,
   Button,
@@ -15,24 +17,25 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
+import { titleSetsType } from "../types/titleSetsType";
 
 type Props = {
   labels: [string, boolean, string][];
   setLabels: Dispatch<SetStateAction<[string, boolean, string][]>>;
-  titleSets: { [key: string]: string };
 };
 
 export const CheckboxLabels: FC<Props> = memo(
-  ({ labels, setLabels, titleSets }): JSX.Element => {
+  ({ labels, setLabels }): JSX.Element => {
     const [open, setOpen] = useState<boolean>(false);
     const [buf, setBuf] = useState<string>("");
+    const titleSets = useRecoilValue<titleSetsType>(allDocumentsState);
 
     const onClose = (): void => {
       setBuf("");
       setOpen(false);
     };
 
-    const handleAddQuestion = () => {
+    const handleAddQuestion = (): void => {
       if (buf !== "") {
         if (labels.filter(([label, _]) => label === buf).length >= 1) {
           alert("回答が重複しています");

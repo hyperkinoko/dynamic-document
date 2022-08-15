@@ -8,14 +8,14 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
-import { useEffect, useState, FC } from "react";
+import { useState, FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllDocuments, saveDocument } from "../api/api";
+import { saveDocument } from "../api/api";
 import { CheckboxLabels } from "../components/CheckboxLabels";
 import { InputAccordion } from "../components/InputAccordion";
 import { MarkdownEditor } from "../components/MarkdownEditor";
 import { MarkdownViewer } from "../components/MarkdownViewer";
-import { documentObject } from "../type";
+import { documentObject } from "../types/documentObjectType";
 import { isValid } from "../util";
 
 export const CreateDocument: FC = (): JSX.Element => {
@@ -27,7 +27,6 @@ export const CreateDocument: FC = (): JSX.Element => {
     ["はい", false, "未定"],
     ["いいえ", false, "未定"],
   ]);
-  const [titleSets, setTitleSets] = useState<{ [key: string]: string }>({});
 
   const nav = useNavigate();
 
@@ -65,18 +64,6 @@ export const CreateDocument: FC = (): JSX.Element => {
   // 下書きを呼び出す
   const handleGetDraft = async () => {};
 
-  useEffect(() => {
-    getAllDocuments("documents").then((data) => {
-      const res: { [key: string]: string } = { 未定: "未定" };
-      for (const doc of data) {
-        const title: string = doc.title;
-        const id: string = doc.id;
-        res[id] = title;
-      }
-      setTitleSets(res);
-    });
-  }, []);
-
   return (
     <Box sx={{ p: 2 }}>
       <Grid container columnSpacing={2} sx={{ pb: "60px" }}>
@@ -106,13 +93,7 @@ export const CreateDocument: FC = (): JSX.Element => {
           <InputAccordion
             displayText={"質問"}
             component={<MarkdownEditor setFunction={setQuestion} />}
-            options={
-              <CheckboxLabels
-                labels={labels}
-                setLabels={setLabels}
-                titleSets={titleSets}
-              />
-            }
+            options={<CheckboxLabels labels={labels} setLabels={setLabels} />}
           />
         </Grid>
         <Grid item xs={6} sx={{ height: "100%" }}>

@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState, VFC } from "react";
 import { getDocument } from "../api/api";
-import { documentObject } from "../type";
+import { documentObject } from "../types/documentObjectType";
 import { MarkdownViewer } from "../components/MarkdownViewer";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -71,10 +71,6 @@ export const ViewDocument: VFC = () => {
       nav("/", { replace: true });
     }
   }, []);
-
-  useEffect(() => {
-    console.log(docHistory);
-  }, [docHistory]);
 
   return (
     <>

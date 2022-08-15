@@ -7,7 +7,7 @@ import {
   addDoc,
   updateDoc,
 } from "firebase/firestore";
-import { documentObject } from "../type";
+import { documentObject } from "../types/documentObjectType";
 import { documentConverter } from "../util";
 
 export const getAllDocuments = async (

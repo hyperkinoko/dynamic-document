@@ -4,7 +4,7 @@ import {
   FirestoreDataConverter,
   DocumentData,
 } from "firebase/firestore";
-import { documentObject } from "./type";
+import { documentObject } from "./types/documentObjectType";
 
 export const documentConverter: FirestoreDataConverter<documentObject> = {
   toFirestore(data: documentObject): DocumentData {
