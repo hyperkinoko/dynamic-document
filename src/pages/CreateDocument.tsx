@@ -2,11 +2,15 @@ import {
   AppBar,
   Button,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
   Grid,
   Paper,
   Toolbar,
   Typography,
   TextField,
+  DialogContentText,
 } from "@mui/material";
 import { useState, FC } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,11 +27,11 @@ export const CreateDocument: FC = (): JSX.Element => {
   const [lead, setLead] = useState<string>("");
   const [procedure, setProcedure] = useState<string>("");
   const [question, setQuestion] = useState<string>("");
+  const [openLeave, setOpenLeave] = useState<boolean>(false);
   const [labels, setLabels] = useState<[string, boolean, string][]>([
     ["はい", false, "未定"],
     ["いいえ", false, "未定"],
   ]);
-
   const nav = useNavigate();
 
   const handleSubmit = async (collectionName: string) => {
@@ -54,15 +58,15 @@ export const CreateDocument: FC = (): JSX.Element => {
       options,
     };
     // documentsに保存するときは整合性チェックを行う
-    if (collectionName !== "documents" || isValid(data))
+    if (
+      (collectionName === "documents" && isValid(data)) ||
+      (collectionName === "drafts" && !!title)
+    )
       saveDocument(data, collectionName).then(() => {
         nav("/admin", { replace: true });
       });
-    else console.error(data);
+    else alert("タイトルを入力してください");
   };
-
-  // 下書きを呼び出す
-  const handleGetDraft = async () => {};
 
   return (
     <Box sx={{ p: 2 }}>
@@ -121,24 +125,59 @@ export const CreateDocument: FC = (): JSX.Element => {
           )}
         </Grid>
       </Grid>
-      <AppBar position="fixed" sx={{ top: "auto", bottom: 0 }}>
+      <Dialog open={openLeave} onClose={() => setOpenLeave(false)}>
+        <DialogContent>
+          <DialogContentText>本当に編集をやめますか？</DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 1 }}>
+          <Button variant="contained" onClick={() => setOpenLeave(false)}>
+            編集を続ける
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => nav("/", { replace: true })}
+          >
+            下書きに保存せずにやめる
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => handleSubmit("drafts")}
+          >
+            下書きに保存する
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <AppBar
+        position="fixed"
+        sx={{ bgcolor: "whitesmoke", top: "auto", bottom: 0 }}
+      >
         <Toolbar>
-          <Button color="inherit" onClick={handleGetDraft}>
-            <Typography variant={"h6"} sx={{ p: 1 }}>
-              下書きを呼び出す
-            </Typography>
-          </Button>
           <Box sx={{ flexGrow: 1 }} />
-          <Button color="inherit" onClick={() => handleSubmit("drafts")}>
-            <Typography variant={"h6"} sx={{ p: 1 }}>
-              下書きに保存する
-            </Typography>
-          </Button>
-          <Button color="inherit" onClick={() => handleSubmit("documents")}>
-            <Typography variant={"h6"} sx={{ p: 1 }}>
-              保存する
-            </Typography>
-          </Button>
+          <Box>
+            <Button
+              color="error"
+              variant="contained"
+              onClick={() => setOpenLeave(true)}
+            >
+              編集をやめる
+            </Button>
+          </Box>
+          <Box sx={{ pl: 1 }}>
+            <Button variant="contained" onClick={() => handleSubmit("drafts")}>
+              下書きに保存
+            </Button>
+          </Box>
+          <Box sx={{ pl: 1 }}>
+            <Button
+              color="success"
+              variant="contained"
+              onClick={() => handleSubmit("documents")}
+            >
+              保存
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>
