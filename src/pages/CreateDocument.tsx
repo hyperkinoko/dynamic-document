@@ -24,6 +24,7 @@ import { isValid } from "../util";
 
 export const CreateDocument: FC = (): JSX.Element => {
   const location = useLocation();
+  const [id, setId] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [lead, setLead] = useState<string>("");
   const [procedure, setProcedure] = useState<string>("");
@@ -36,7 +37,6 @@ export const CreateDocument: FC = (): JSX.Element => {
   const nav = useNavigate();
 
   const handleSubmit = async (collectionName: string) => {
-    const id: string = "1";
     const options: { label: string; next: string }[] = [];
     for (const [label, flag, destination] of labels) {
       if (collectionName === "draft" || flag) {
@@ -72,6 +72,7 @@ export const CreateDocument: FC = (): JSX.Element => {
   useEffect(() => {
     if (location.state) {
       const myState: documentObject = location.state as documentObject;
+      setId(myState.id);
       setTitle(myState.title);
       if (myState.markdownContent?.lead) setLead(myState.markdownContent.lead);
       if (myState.markdownContent?.procedure)

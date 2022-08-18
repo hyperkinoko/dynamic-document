@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   addDoc,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { documentObject } from "../types/documentObjectType";
@@ -37,15 +38,23 @@ export const saveDocument = async (
   collectionName: string
 ): Promise<void> => {
   try {
-    const docRef = await addDoc(
-      collection(db, collectionName).withConverter(documentConverter),
-      document
-    );
-    await updateDoc(docRef, {
-      id: docRef.id,
-    });
+    if (document.id === "") {
+      // 新規
+      const docRef = await addDoc(
+        collection(db, collectionName).withConverter(documentConverter),
+        document
+      );
+      await updateDoc(docRef, {
+        id: docRef.id,
+      });
+    } else {
+      // 更新のみ
+      await setDoc(
+        doc(db, collectionName, document.id).withConverter(documentConverter),
+        document
+      );
+    }
     alert("success");
-    console.log("Document written with ID: ", docRef.id);
   } catch (e) {
     alert("error");
     console.error("Error adding document: ", e);
