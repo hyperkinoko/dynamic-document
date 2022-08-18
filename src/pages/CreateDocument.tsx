@@ -60,13 +60,16 @@ export const CreateDocument: FC = (): JSX.Element => {
     };
     // documentsに保存するときは整合性チェックを行う
     if (
-      (collectionName === "documents" && isValid(data)) ||
+      (collectionName === "documents" &&
+        !!title &&
+        !!question &&
+        options.length >= 1) ||
       (collectionName === "drafts" && !!title)
     )
       saveDocument(data, collectionName).then(() => {
         nav("/admin", { replace: true });
       });
-    else alert("タイトルを入力してください");
+    else alert("フォーマットが正しくありません");
   };
 
   useEffect(() => {
