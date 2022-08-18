@@ -125,10 +125,14 @@ export const Admin: FC = (): JSX.Element => {
             value={buf}
             autoComplete="off"
           />
-          <List>
+          <List
+            sx={{ minHeight: "200px", maxHeight: "200px", minWidth: "300px" }}
+          >
             {Object.entries(titleSets)
-              .filter(([_, name]) => name !== "未定")
-              .map(([key, name], idx) => {
+              .filter(([_, name]) =>
+                buf === "" ? name !== "未定" : name.indexOf(buf) !== -1
+              )
+              .map(([key, name]) => {
                 return (
                   <Fragment key={key}>
                     <ListItemButton onClick={() => setBuf(name)}>
