@@ -105,15 +105,19 @@ export const CreateDocument: FC = (): JSX.Element => {
           />
           <InputAccordion
             displayText={"リード"}
-            component={<MarkdownEditor setFunction={setLead} />}
+            component={<MarkdownEditor buf={lead} setFunction={setLead} />}
           />
           <InputAccordion
             displayText={"手順"}
-            component={<MarkdownEditor setFunction={setProcedure} />}
+            component={
+              <MarkdownEditor buf={procedure} setFunction={setProcedure} />
+            }
           />
           <InputAccordion
             displayText={"質問"}
-            component={<MarkdownEditor setFunction={setQuestion} />}
+            component={
+              <MarkdownEditor buf={question} setFunction={setQuestion} />
+            }
             options={<CheckboxLabels labels={labels} setLabels={setLabels} />}
           />
         </Grid>
