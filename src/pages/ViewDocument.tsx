@@ -9,7 +9,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useEffect, useState, VFC } from "react";
+import { useEffect, useState, FC } from "react";
 import { getDocument } from "../api/api";
 import { documentObject } from "../types/documentObjectType";
 import { MarkdownViewer } from "../components/MarkdownViewer";
@@ -17,7 +17,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import HomeIcon from "@mui/icons-material/Home";
 
-export const ViewDocument: VFC = () => {
+export const ViewDocument: FC = (): JSX.Element => {
   const nav = useNavigate();
   const location = useLocation();
   const initId: string = location.state as string;
