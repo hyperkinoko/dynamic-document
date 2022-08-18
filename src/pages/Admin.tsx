@@ -12,6 +12,7 @@ import {
   ListItemButton,
   ListItemText,
   Divider,
+  Stack,
 } from "@mui/material";
 import { FC, useState, useEffect, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
@@ -46,6 +47,7 @@ export const Admin: FC = (): JSX.Element => {
     }
   };
 
+  // recoilでstate管理するならuseEffect使わなくてよさそう
   useEffect(() => {
     getAllDocuments("documents").then((data) => {
       const res: { [key: string]: string } = { 未定: "未定" };
@@ -68,50 +70,41 @@ export const Admin: FC = (): JSX.Element => {
         transform: "translateY(-50%) translateX(-50%)",
       }}
     >
-      <Grid container columnSpacing={5}>
-        <Grid
-          item
-          xs={6}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+      <Stack spacing={4}>
+        <Paper
+          elevation={5}
+          sx={{ p: 2 }}
+          onClick={() => {
+            setOpen(true);
           }}
         >
-          <Paper
-            elevation={5}
-            sx={{ p: 2 }}
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            <Typography variant={"h5"} sx={{ p: 2 }}>
-              ドキュメントを閲覧
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid
-          item
-          xs={6}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+          <Typography variant={"h5"} sx={{ p: 2 }}>
+            ドキュメントを閲覧
+          </Typography>
+        </Paper>
+        <Paper
+          elevation={5}
+          sx={{ p: 2 }}
+          onClick={() => {
+            nav("/edit");
           }}
         >
-          <Paper
-            elevation={5}
-            sx={{ p: 2 }}
-            onClick={() => {
-              nav("/edit");
-            }}
-          >
-            <Typography variant={"h5"} sx={{ p: 2 }}>
-              ドキュメントを編集
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+          <Typography variant={"h5"} sx={{ p: 2 }}>
+            ドキュメントを作成
+          </Typography>
+        </Paper>
+        <Paper
+          elevation={5}
+          sx={{ p: 2 }}
+          onClick={() => {
+            nav("/edit");
+          }}
+        >
+          <Typography variant={"h5"} sx={{ p: 2 }}>
+            ドキュメントを編集
+          </Typography>
+        </Paper>
+      </Stack>
       <Dialog open={open} onClose={onClose}>
         <DialogContent>
           <TextField
