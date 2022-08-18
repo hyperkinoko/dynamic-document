@@ -12,8 +12,8 @@ import {
   TextField,
   DialogContentText,
 } from "@mui/material";
-import { useState, FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, FC, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { saveDocument } from "../api/api";
 import { CheckboxLabels } from "../components/CheckboxLabels";
 import { InputAccordion } from "../components/InputAccordion";
@@ -23,6 +23,7 @@ import { documentObject } from "../types/documentObjectType";
 import { isValid } from "../util";
 
 export const CreateDocument: FC = (): JSX.Element => {
+  const location = useLocation();
   const [title, setTitle] = useState<string>("");
   const [lead, setLead] = useState<string>("");
   const [procedure, setProcedure] = useState<string>("");
@@ -38,7 +39,7 @@ export const CreateDocument: FC = (): JSX.Element => {
     const id: string = "1";
     const options: { label: string; next: string }[] = [];
     for (const [label, flag, destination] of labels) {
-      if (flag) {
+      if (collectionName === "draft" || flag) {
         options.push({
           label,
           next: destination !== "未定" ? destination : "",
@@ -67,6 +68,21 @@ export const CreateDocument: FC = (): JSX.Element => {
       });
     else alert("タイトルを入力してください");
   };
+
+  useEffect(() => {
+    if (location.state) {
+      const myState: documentObject = location.state as documentObject;
+      setTitle(myState.title);
+      if (myState.markdownContent?.lead) setLead(myState.markdownContent.lead);
+      if (myState.markdownContent?.procedure)
+        setProcedure(myState.markdownContent.procedure);
+      setQuestion(myState.markdownContent.question);
+      const tmp: [string, boolean, string][] = myState.options.map(
+        ({ label, next }) => [label, true, next]
+      );
+      setLabels(tmp);
+    }
+  }, []);
 
   return (
     <Box sx={{ p: 2 }}>

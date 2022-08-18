@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  Grid,
   Paper,
   Typography,
   TextField,
@@ -14,22 +13,32 @@ import {
   Divider,
   Stack,
 } from "@mui/material";
-import { FC, useState, useEffect, Fragment } from "react";
+import {
+  FC,
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  Fragment,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { allDocumentsState } from "../atoms/AllDocumentsData";
 import { getAllDocuments } from "../api/api";
 import { titleSetsType } from "../types/titleSetsType";
+import { documentObject } from "../types/documentObjectType";
 
 export const Admin: FC = (): JSX.Element => {
   const nav = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
+  const [draftOpen, setDraftOpen] = useState<boolean>(false);
   const [buf, setBuf] = useState<string>("");
   const [titleSets, setTitleSets] =
     useRecoilState<titleSetsType>(allDocumentsState);
+  const [draftSets, setDraftSets] = useState<documentObject[]>([]);
 
-  const onClose = (): void => {
-    setOpen(false);
+  const onClose = (setFunction: Dispatch<SetStateAction<boolean>>): void => {
+    setFunction(false);
     setBuf("");
   };
 
@@ -47,7 +56,22 @@ export const Admin: FC = (): JSX.Element => {
     }
   };
 
+  const handleEditClick = (): void => {
+    if (buf === "") {
+      alert("編集するドキュメントのタイトルを入力してください");
+    } else {
+      for (const draft of draftSets) {
+        if (buf === draft.title) {
+          nav("/edit", { state: draft });
+          return;
+        }
+      }
+      alert("存在すするドキュメントのタイトルを入力してください");
+    }
+  };
+
   // recoilでstate管理するならuseEffect使わなくてよさそう
+  // 一回目のclickのときに取得でいい
   useEffect(() => {
     getAllDocuments("documents").then((data) => {
       const res: { [key: string]: string } = { 未定: "未定" };
@@ -58,6 +82,7 @@ export const Admin: FC = (): JSX.Element => {
       }
       setTitleSets(res);
     });
+    getAllDocuments("drafts").then(setDraftSets);
   }, []);
 
   return (
@@ -97,7 +122,7 @@ export const Admin: FC = (): JSX.Element => {
           elevation={5}
           sx={{ p: 2 }}
           onClick={() => {
-            nav("/edit");
+            setDraftOpen(true);
           }}
         >
           <Typography variant={"h5"} sx={{ p: 2 }}>
@@ -105,7 +130,7 @@ export const Admin: FC = (): JSX.Element => {
           </Typography>
         </Paper>
       </Stack>
-      <Dialog open={open} onClose={onClose}>
+      <Dialog open={open} onClose={() => onClose(setOpen)}>
         <DialogContent>
           <TextField
             autoFocus
@@ -138,11 +163,58 @@ export const Admin: FC = (): JSX.Element => {
           </List>
         </DialogContent>
         <DialogActions sx={{ p: 1 }}>
-          <Button variant="contained" color="error" onClick={onClose}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => onClose(setOpen)}
+          >
             Cancel
           </Button>
           <Button variant="contained" onClick={handleViewClick}>
             View
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={draftOpen} onClose={() => onClose(setDraftOpen)}>
+        <DialogContent>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            label="編集するドキュメントのタイトル"
+            fullWidth
+            variant="standard"
+            onChange={(e) => setBuf(e.target.value)}
+            value={buf}
+            autoComplete="off"
+          />
+          <List
+            sx={{ minHeight: "200px", maxHeight: "200px", minWidth: "300px" }}
+          >
+            {draftSets
+              .filter(({ title }) => buf === "" || title.indexOf(buf) !== -1)
+              .map(({ title }, idx) => {
+                return (
+                  <Fragment key={idx}>
+                    <ListItemButton onClick={() => setBuf(title)}>
+                      <ListItemText>{title}</ListItemText>
+                    </ListItemButton>
+                    <Divider />
+                  </Fragment>
+                );
+              })}
+          </List>
+        </DialogContent>
+        <DialogActions sx={{ p: 1 }}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => onClose(setDraftOpen)}
+          >
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={handleEditClick}>
+            edit
           </Button>
         </DialogActions>
       </Dialog>
