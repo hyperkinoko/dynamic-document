@@ -25,10 +25,6 @@ export const documentConverter: FirestoreDataConverter<documentObject> = {
     options: SnapshotOptions
   ): documentObject {
     const data = snapshot.data(options);
-    if (!isValid(data)) {
-      console.error(data);
-      throw new Error("invalid data");
-    }
     return {
       title: data.title,
       id: data.id,
