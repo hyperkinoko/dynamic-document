@@ -93,6 +93,7 @@ export const Admin: FC = (): JSX.Element => {
         top: "50%",
         left: "50%",
         transform: "translateY(-50%) translateX(-50%)",
+        textAlign: "center",
       }}
     >
       <Stack spacing={4}>
@@ -127,6 +128,17 @@ export const Admin: FC = (): JSX.Element => {
         >
           <Typography variant={"h5"} sx={{ p: 2 }}>
             ドキュメントを編集
+          </Typography>
+        </Paper>
+        <Paper
+          elevation={5}
+          sx={{ p: 2 }}
+          onClick={() => {
+            nav("/signup");
+          }}
+        >
+          <Typography variant={"h5"} sx={{ p: 2 }}>
+            ユーザー登録
           </Typography>
         </Paper>
       </Stack>

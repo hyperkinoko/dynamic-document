@@ -1,41 +1,45 @@
-import { LockOutlined } from "@mui/icons-material";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  getAuth,
+} from "firebase/auth";
+import { FC, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AccountCircle } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Grid, Paper, TextField, Typography } from "@mui/material";
 import { lightGreen } from "@mui/material/colors";
-import {
-  browserSessionPersistence,
-  getAuth,
-  setPersistence,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { useState, FC } from "react";
-import { useSetRecoilState } from "recoil";
-import { authState } from "../hooks/Auth";
 
-export const Login: FC = (): JSX.Element => {
-  const setAuth = useSetRecoilState(authState);
+export const SignUp: FC = (): JSX.Element => {
+  const nav = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleLogin = async () => {
+  const handleSignUp = async (): Promise<void> => {
+    // バリデーションチェック
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      alert("正しいメールアドレスを入力してください");
+      setLoading(false);
+      return;
+    }
+    if (password.length <= 6) {
+      alert("パスワードは7文字以上に設定してください");
+      setLoading(false);
+      return;
+    }
+
     const auth = getAuth();
-    setPersistence(auth, browserSessionPersistence).then(() => {
-      signInWithEmailAndPassword(auth, email, password)
-        .then((auth) => {
-          if (auth.user.emailVerified) setAuth(auth.user);
-          else throw new Error("1");
-        })
-        .catch((error) => {
-          if (error.name === "Error") {
-            alert("メール認証を済ませてください");
-            console.log("a");
-          } else if (error.name === "FirebaseError") {
-            alert(`user doesn't exist`);
-          }
-          setLoading(false);
-        });
-    });
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        sendEmailVerification(userCredential.user);
+        alert("確認メールを送信しました");
+        nav("/admin", { replace: true });
+      })
+      .catch(() => {
+        alert("既に登録されています");
+        setLoading(false);
+      });
   };
 
   return (
@@ -43,10 +47,10 @@ export const Login: FC = (): JSX.Element => {
       <Paper elevation={3} sx={{ p: 4 }}>
         <Grid container direction="column" alignItems="center">
           <Avatar sx={{ bgcolor: lightGreen[700] }}>
-            <LockOutlined />
+            <AccountCircle />
           </Avatar>
           <Typography variant={"h5"} sx={{ py: 2 }}>
-            sign in
+            sign up
           </Typography>
           <TextField
             label="メールアドレス"
@@ -56,6 +60,8 @@ export const Login: FC = (): JSX.Element => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             sx={{ py: 1 }}
+            autoComplete="off"
+            autoFocus={true}
           />
           <TextField
             type="password"
@@ -66,19 +72,20 @@ export const Login: FC = (): JSX.Element => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             sx={{ py: 1 }}
+            autoComplete="off"
           />
           <LoadingButton
             loading={loading}
             onClick={() => {
               setLoading(true);
-              handleLogin();
+              handleSignUp();
             }}
             color="primary"
             variant="contained"
             fullWidth
             type="submit"
           >
-            ログイン
+            サインアップ
           </LoadingButton>
         </Grid>
       </Paper>
