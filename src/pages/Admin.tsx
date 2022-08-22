@@ -1,17 +1,21 @@
 import {
+  AppBar,
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   Paper,
-  Typography,
   TextField,
+  Toolbar,
+  Typography,
   List,
   ListItemButton,
   ListItemText,
   Divider,
   Stack,
+  Container,
+  IconButton,
 } from "@mui/material";
 import {
   FC,
@@ -22,13 +26,17 @@ import {
   Fragment,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { allDocumentsState } from "../atoms/AllDocumentsData";
 import { getAllDocuments } from "../api/api";
 import { titleSetsType } from "../types/titleSetsType";
 import { documentObject } from "../types/documentObjectType";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { getAuth, signOut } from "firebase/auth";
+import { authState } from "../hooks/Auth";
 
 export const Admin: FC = (): JSX.Element => {
+  const setAuth = useSetRecoilState(authState);
   const nav = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const [draftOpen, setDraftOpen] = useState<boolean>(false);
@@ -70,6 +78,18 @@ export const Admin: FC = (): JSX.Element => {
     }
   };
 
+  const handleLogout = (): void => {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        alert("ログアウトしました");
+        setAuth(null);
+      })
+      .catch(() => {
+        alert("ログアウトに失敗しました");
+      });
+  };
+
   // recoilでstate管理するならuseEffect使わなくてよさそう
   // 一回目のclickのときに取得でいい
   useEffect(() => {
@@ -86,62 +106,65 @@ export const Admin: FC = (): JSX.Element => {
   }, []);
 
   return (
-    <Box
-      sx={{
-        p: 4,
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translateY(-50%) translateX(-50%)",
-        textAlign: "center",
-      }}
-    >
-      <Stack spacing={4}>
-        <Paper
-          elevation={5}
-          sx={{ p: 2 }}
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          <Typography variant={"h5"} sx={{ p: 2 }}>
-            ドキュメントを閲覧
+    <Box>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            管理画面
           </Typography>
-        </Paper>
-        <Paper
-          elevation={5}
-          sx={{ p: 2 }}
-          onClick={() => {
-            nav("/edit");
-          }}
-        >
-          <Typography variant={"h5"} sx={{ p: 2 }}>
-            ドキュメントを作成
-          </Typography>
-        </Paper>
-        <Paper
-          elevation={5}
-          sx={{ p: 2 }}
-          onClick={() => {
-            setDraftOpen(true);
-          }}
-        >
-          <Typography variant={"h5"} sx={{ p: 2 }}>
-            ドキュメントを編集
-          </Typography>
-        </Paper>
-        <Paper
-          elevation={5}
-          sx={{ p: 2 }}
-          onClick={() => {
-            nav("/signup");
-          }}
-        >
-          <Typography variant={"h5"} sx={{ p: 2 }}>
-            ユーザー登録
-          </Typography>
-        </Paper>
-      </Stack>
+          <IconButton size="large" color="inherit" onClick={handleLogout}>
+            <LogoutIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Container>
+        <Stack spacing={4} sx={{ p: 3, textAlign: "center" }}>
+          <Paper
+            elevation={5}
+            sx={{ p: 2 }}
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            <Typography variant={"h5"} sx={{ p: 2 }}>
+              ドキュメントを閲覧
+            </Typography>
+          </Paper>
+          <Paper
+            elevation={5}
+            sx={{ p: 2 }}
+            onClick={() => {
+              nav("/edit");
+            }}
+          >
+            <Typography variant={"h5"} sx={{ p: 2 }}>
+              ドキュメントを作成
+            </Typography>
+          </Paper>
+          <Paper
+            elevation={5}
+            sx={{ p: 2 }}
+            onClick={() => {
+              setDraftOpen(true);
+            }}
+          >
+            <Typography variant={"h5"} sx={{ p: 2 }}>
+              ドキュメントを編集
+            </Typography>
+          </Paper>
+          <Paper
+            elevation={5}
+            sx={{ p: 2 }}
+            onClick={() => {
+              nav("/signup");
+            }}
+          >
+            <Typography variant={"h5"} sx={{ p: 2 }}>
+              ユーザー登録
+            </Typography>
+          </Paper>
+        </Stack>
+      </Container>
       <Dialog open={open} onClose={() => onClose(setOpen)}>
         <DialogContent>
           <TextField
