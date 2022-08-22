@@ -16,6 +16,7 @@ import {
   Stack,
   Container,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
   FC,
@@ -37,6 +38,7 @@ import { authState } from "../hooks/Auth";
 
 export const Admin: FC = (): JSX.Element => {
   const setAuth = useSetRecoilState(authState);
+  const auth = getAuth();
   const nav = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const [draftOpen, setDraftOpen] = useState<boolean>(false);
@@ -44,6 +46,7 @@ export const Admin: FC = (): JSX.Element => {
   const [titleSets, setTitleSets] =
     useRecoilState<titleSetsType>(allDocumentsState);
   const [draftSets, setDraftSets] = useState<documentObject[]>([]);
+  const userName: string = auth.currentUser?.email as string;
 
   const onClose = (setFunction: Dispatch<SetStateAction<boolean>>): void => {
     setFunction(false);
@@ -79,7 +82,6 @@ export const Admin: FC = (): JSX.Element => {
   };
 
   const handleLogout = (): void => {
-    const auth = getAuth();
     signOut(auth)
       .then(() => {
         alert("ログアウトしました");
@@ -112,9 +114,11 @@ export const Admin: FC = (): JSX.Element => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             管理画面
           </Typography>
-          <IconButton size="large" color="inherit" onClick={handleLogout}>
-            <LogoutIcon />
-          </IconButton>
+          <Tooltip title={userName}>
+            <IconButton size="large" color="inherit" onClick={handleLogout}>
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
       </AppBar>
       <Container>
