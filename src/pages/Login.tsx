@@ -136,7 +136,7 @@ export const Login: FC = (): JSX.Element => {
                 <Button onClick={handleSendEmail}>認証メールを再送する</Button>
               </Stack>
             )}
-            {isPasswordError >= 0 && (
+            {isPasswordError >= 3 && (
               <Stack direction="row">
                 <Typography variant={"h6"}>
                   パスワードを忘れましたか？
