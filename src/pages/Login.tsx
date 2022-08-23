@@ -162,7 +162,7 @@ export const Login: FC = (): JSX.Element => {
           </LoadingButton>
         </Grid>
       </Paper>
-      <ResetEmailDialog
+      <ResetPasswordDialog
         open={open}
         handleOpen={handleOpen}
         setSnackOpen={setSnackOpen}
@@ -193,7 +193,7 @@ type Props = {
   setSnackOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const ResetEmailDialog: FC<Props> = memo(
+const ResetPasswordDialog: FC<Props> = memo(
   ({ open, handleOpen, setSnackOpen }): JSX.Element => {
     const [email, setEmail] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
