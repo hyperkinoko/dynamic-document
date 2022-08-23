@@ -1,11 +1,21 @@
 import { LockOutlined } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Box, Grid, Paper, TextField, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Grid,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { lightGreen } from "@mui/material/colors";
 import {
   browserSessionPersistence,
   getAuth,
   setPersistence,
+  sendEmailVerification,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useState, FC } from "react";
@@ -17,6 +27,7 @@ export const Login: FC = (): JSX.Element => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [isEmailVerified, setIsEmailVerified] = useState<boolean>(true);
 
   const handleLogin = async () => {
     const auth = getAuth();
@@ -29,13 +40,29 @@ export const Login: FC = (): JSX.Element => {
         .catch((error) => {
           if (error.name === "Error") {
             alert("メール認証を済ませてください");
-            console.log("a");
+            setIsEmailVerified(false);
           } else if (error.name === "FirebaseError") {
             alert(`user doesn't exist`);
           }
           setLoading(false);
         });
     });
+  };
+
+  const handleSendEmail = () => {
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+      .then((auth) => {
+        sendEmailVerification(auth.user);
+        alert("確認メールを送信しました");
+      })
+      .catch((error) => {
+        if (error.name === "FirebaseError") {
+          alert(`user doesn't exist`);
+        } else {
+          alert(`error:${error.message}`);
+        }
+      });
   };
 
   return (
@@ -67,6 +94,12 @@ export const Login: FC = (): JSX.Element => {
             onChange={(e) => setPassword(e.target.value)}
             sx={{ py: 1 }}
           />
+          {!isEmailVerified && (
+            <Stack direction="row" sx={{ py: 2 }}>
+              <Typography variant={"h6"}>メールが届いていませんか？</Typography>
+              <Button onClick={handleSendEmail}>認証メールを再送する</Button>
+            </Stack>
+          )}
           <LoadingButton
             loading={loading}
             onClick={() => {
