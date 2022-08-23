@@ -9,6 +9,8 @@ import { AccountCircle } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Grid, Paper, TextField, Typography } from "@mui/material";
 import { lightGreen } from "@mui/material/colors";
+import { errorHandling } from "../util";
+import { FirebaseError } from "firebase/app";
 
 export const SignUp: FC = (): JSX.Element => {
   const nav = useNavigate();
@@ -17,18 +19,6 @@ export const SignUp: FC = (): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSignUp = async (): Promise<void> => {
-    // バリデーションチェック
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      alert("正しいメールアドレスを入力してください");
-      setLoading(false);
-      return;
-    }
-    if (password.length <= 6) {
-      alert("パスワードは7文字以上に設定してください");
-      setLoading(false);
-      return;
-    }
-
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -36,8 +26,8 @@ export const SignUp: FC = (): JSX.Element => {
         alert("確認メールを送信しました");
         nav("/admin", { replace: true });
       })
-      .catch(() => {
-        alert("既に登録されています");
+      .catch((error: FirebaseError) => {
+        errorHandling(error);
         setLoading(false);
       });
   };

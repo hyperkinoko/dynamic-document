@@ -36,6 +36,8 @@ import {
 } from "react";
 import { useSetRecoilState } from "recoil";
 import { authState } from "../hooks/Auth";
+import { errorHandling } from "../util";
+import { FirebaseError } from "firebase/app";
 
 export const Login: FC = (): JSX.Element => {
   const setAuth = useSetRecoilState(authState);
@@ -53,28 +55,13 @@ export const Login: FC = (): JSX.Element => {
       signInWithEmailAndPassword(auth, email, password)
         .then((auth) => {
           if (auth.user.emailVerified) setAuth(auth.user);
-          else throw new Error("");
+          else throw new Error("not verify");
         })
-        .catch((error) => {
-          const errorName: string = error.name;
-          const errorCode: string = error.code;
-
-          // エラーハンドリング
-          if (errorName === "Error") {
-            alert("メール認証を済ませてください");
-            setIsEmailVerified(false);
-          } else if (errorCode === "auth/wrong-password") {
-            alert("パスワードが違います");
+        .catch((error: FirebaseError) => {
+          errorHandling(error);
+          if (error.name === "not verify") setIsEmailVerified(false);
+          if (error.code === "auth/wrong-password")
             setIsPasswordError((prev) => prev + 1);
-          } else if (errorCode === "auth/too-many-requests") {
-            alert(
-              "連続でログインに失敗しました。少し時間を開けてもう一度お試しください"
-            );
-          } else if (errorCode === "auth/user-not-found") {
-            alert("ユーザーが存在しません");
-          } else {
-            alert("エラーが発生しました");
-          }
           setLoading(false);
         });
     });
@@ -87,13 +74,7 @@ export const Login: FC = (): JSX.Element => {
         sendEmailVerification(auth.user);
         setSnackOpen(true);
       })
-      .catch((error) => {
-        if (error.name === "FirebaseError") {
-          alert(`user doesn't exist`);
-        } else {
-          alert(`error:${error.message}`);
-        }
-      });
+      .catch(errorHandling);
   };
 
   const handleOpen = useCallback((): void => setOpen((prev) => !prev), []);
@@ -205,16 +186,7 @@ const ResetPasswordDialog: FC<Props> = memo(
           setSnackOpen(true);
           handleOpen();
         })
-        .catch((error) => {
-          const errorCode: string = error.code;
-
-          // エラーハンドリング
-          if (errorCode === "auth/user-not-found") {
-            alert("ユーザーが存在しません");
-          } else {
-            alert("エラーが発生しました");
-          }
-        })
+        .catch(errorHandling)
         .finally(() => setLoading(false));
     };
 

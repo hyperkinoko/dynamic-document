@@ -1,3 +1,4 @@
+import { FirebaseError } from "firebase/app";
 import {
   QueryDocumentSnapshot,
   SnapshotOptions,
@@ -93,5 +94,32 @@ export const isValid = (data: any): data is documentObject => {
     return false;
   } else {
     return true;
+  }
+};
+
+// エラーハンドリング
+export const errorHandling = (error: FirebaseError): void => {
+  const errorCode: string = error.code;
+  const errorName: string = error.name;
+  const errorMessage: string = error.message;
+
+  if (errorName === "Error") {
+    alert("メール認証を済ませてください");
+  } else if (errorCode === "auth/invalid-email") {
+    alert("正しい形式のメールアドレスを入力してください");
+  } else if (errorCode === "auth/wrong-password") {
+    alert("パスワードが違います");
+  } else if (errorCode === "auth/auth/weak-password") {
+    alert("パスワードは7文字以上に設定してください");
+  } else if (errorCode === "auth/too-many-requests") {
+    alert(
+      "連続でログインに失敗しました。少し時間を開けてもう一度お試しください"
+    );
+  } else if (errorCode === "auth/email-already-in-use") {
+    alert("そのメールアドレスは既に登録されています");
+  } else if (errorCode === "auth/user-not-found") {
+    alert("ユーザーが存在しません");
+  } else {
+    alert(`エラー:${errorMessage}`);
   }
 };
