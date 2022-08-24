@@ -59,7 +59,7 @@ export const Login: FC = (): JSX.Element => {
         })
         .catch((error: FirebaseError) => {
           errorHandling(error);
-          if (error.name === "not verify") setIsEmailVerified(false);
+          if (error.name === "Error") setIsEmailVerified(false);
           if (error.code === "auth/wrong-password")
             setIsPasswordError((prev) => prev + 1);
           setLoading(false);
