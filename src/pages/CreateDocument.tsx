@@ -20,7 +20,6 @@ import { InputAccordion } from "../components/InputAccordion";
 import { MarkdownEditor } from "../components/MarkdownEditor";
 import { MarkdownViewer } from "../components/MarkdownViewer";
 import { documentObject } from "../types/documentObjectType";
-import { isValid } from "../util";
 
 export const CreateDocument: FC = (): JSX.Element => {
   const location = useLocation();
