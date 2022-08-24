@@ -1,12 +1,13 @@
+import { FirebaseError } from "firebase/app";
 import {
   QueryDocumentSnapshot,
   SnapshotOptions,
   FirestoreDataConverter,
   DocumentData,
 } from "firebase/firestore";
-import { documentObject } from "./type";
+import { documentObject } from "./types/documentObjectType";
 
-const documentConverter: FirestoreDataConverter<documentObject> = {
+export const documentConverter: FirestoreDataConverter<documentObject> = {
   toFirestore(data: documentObject): DocumentData {
     return {
       title: data.title,
@@ -25,10 +26,6 @@ const documentConverter: FirestoreDataConverter<documentObject> = {
     options: SnapshotOptions
   ): documentObject {
     const data = snapshot.data(options);
-    if (!isValid(data)) {
-      console.error(data);
-      throw new Error("invalid data");
-    }
     return {
       title: data.title,
       id: data.id,
@@ -44,16 +41,17 @@ const documentConverter: FirestoreDataConverter<documentObject> = {
 };
 
 // ユーザー定義型ガード
-const isValid = (data: any): data is documentObject => {
+export const isValid = (data: any): data is documentObject => {
+  const missingData: string[] = [];
   if (data == null) return false;
   if (!(data.title && typeof data.title === "string")) {
-    return false;
+    missingData.push("タイトル");
   }
   if (!(data.id && typeof data.id === "string")) {
-    return false;
+    missingData.push("id");
   }
   if (!(data.url && typeof data.url === "string")) {
-    return false;
+    missingData.push("url");
   }
   if (
     !(
@@ -61,7 +59,7 @@ const isValid = (data: any): data is documentObject => {
       typeof data.markdownContent.lead === "string"
     )
   ) {
-    return false;
+    missingData.push("リード");
   }
   if (
     !(
@@ -69,7 +67,7 @@ const isValid = (data: any): data is documentObject => {
       typeof data.markdownContent.procedure === "string"
     )
   ) {
-    return false;
+    missingData.push("手順");
   }
   if (
     !(
@@ -77,12 +75,51 @@ const isValid = (data: any): data is documentObject => {
       typeof data.markdownContent.question === "string"
     )
   ) {
-    return false;
+    missingData.push("質問");
   }
-  if (!(data.options && typeof data.options === "object")) {
-    return false;
+  if (
+    !(
+      data.options &&
+      data.options.length !== 0 &&
+      typeof data.options === "object"
+    )
+  ) {
+    missingData.push("質問の回答");
   }
-  return true;
+  if (missingData.length !== 0) {
+    alert(`次の項目が不足しています
+    ${missingData}
+    `);
+    console.error(missingData);
+    return false;
+  } else {
+    return true;
+  }
 };
 
-export default documentConverter;
+// エラーハンドリング
+export const errorHandling = (error: FirebaseError): void => {
+  const errorCode: string = error.code;
+  const errorName: string = error.name;
+  const errorMessage: string = error.message;
+
+  if (errorName === "Error") {
+    alert("メール認証を済ませてください");
+  } else if (errorCode === "auth/invalid-email") {
+    alert("正しい形式のメールアドレスを入力してください");
+  } else if (errorCode === "auth/wrong-password") {
+    alert("パスワードが違います");
+  } else if (errorCode === "auth/auth/weak-password") {
+    alert("パスワードは7文字以上に設定してください");
+  } else if (errorCode === "auth/too-many-requests") {
+    alert(
+      "連続でログインに失敗しました。少し時間を開けてもう一度お試しください"
+    );
+  } else if (errorCode === "auth/email-already-in-use") {
+    alert("そのメールアドレスは既に登録されています");
+  } else if (errorCode === "auth/user-not-found") {
+    alert("ユーザーが存在しません");
+  } else {
+    alert(`エラー:${errorMessage}`);
+  }
+};
