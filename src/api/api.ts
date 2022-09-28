@@ -10,10 +10,10 @@ import {
 } from "firebase/firestore";
 import { documentObject } from "../types/documentObjectType";
 import { documentConverter } from "../util";
+import { index } from "../firebase/algolia";
 
-export const getAllDocuments = async (
-  collectionName: string
-): Promise<documentObject[]> => {
+export const getAllDocuments = async (): Promise<documentObject[]> => {
+  const collectionName = "documents";
   const querySnapshot = await getDocs(
     collection(db, collectionName).withConverter(documentConverter)
   );
@@ -33,11 +33,9 @@ export const getDocument = async (queryId: string): Promise<documentObject> => {
   return res;
 };
 
-export const saveDocument = async (
-  document: documentObject,
-  collectionName: string
-): Promise<void> => {
+export const saveDocument = async (document: documentObject): Promise<void> => {
   try {
+    const collectionName = "documents";
     if (document.id === "") {
       // 新規
       const docRef = await addDoc(
@@ -59,4 +57,14 @@ export const saveDocument = async (
     alert("error");
     console.error("Error adding document: ", e);
   }
+};
+
+export const documentSearch = async (searchWord: string) => {
+  const res = await index
+    .search(searchWord, {
+      attributesToHighlight: [],
+      responseFields: ["hits", "hitsPerPage", "nbPages", "page"],
+    })
+    .then(({ hits }) => hits);
+  return res;
 };

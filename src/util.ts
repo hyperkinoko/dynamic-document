@@ -19,6 +19,7 @@ export const documentConverter: FirestoreDataConverter<documentObject> = {
         question: data.markdownContent.question,
       },
       options: data.options,
+      draft: data.draft,
     };
   },
   fromFirestore(
@@ -36,6 +37,7 @@ export const documentConverter: FirestoreDataConverter<documentObject> = {
         question: data.markdownContent.question.replace("\\n", "\n\n"),
       },
       options: data.options,
+      draft: data.draft,
     };
   },
 };

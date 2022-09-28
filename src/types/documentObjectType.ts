@@ -8,4 +8,5 @@ export type documentObject = {
     question: string;
   };
   options: { label: string; next: string }[];
+  draft: boolean;
 };

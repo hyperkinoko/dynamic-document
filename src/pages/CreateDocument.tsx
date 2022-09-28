@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useState, FC, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { saveDocument } from "../api/api";
+import { getDocument, saveDocument } from "../api/api";
 import { CheckboxLabels } from "../components/CheckboxLabels";
 import { InputAccordion } from "../components/InputAccordion";
 import { MarkdownEditor } from "../components/MarkdownEditor";
@@ -38,7 +38,7 @@ export const CreateDocument: FC = (): JSX.Element => {
   const handleSubmit = async (collectionName: string) => {
     const options: { label: string; next: string }[] = [];
     for (const [label, flag, destination] of labels) {
-      if (collectionName === "draft" || flag) {
+      if (collectionName === "drafts" || flag) {
         options.push({
           label,
           next: destination !== "未定" ? destination : "",
@@ -56,6 +56,7 @@ export const CreateDocument: FC = (): JSX.Element => {
         question,
       },
       options,
+      draft: collectionName === "drafts" ? true : false,
     };
     // documentsに保存するときは整合性チェックを行う
     if (
@@ -65,7 +66,7 @@ export const CreateDocument: FC = (): JSX.Element => {
         options.length >= 1) ||
       (collectionName === "drafts" && !!title)
     )
-      saveDocument(data, collectionName).then(() => {
+      saveDocument(data).then(() => {
         nav("/admin", { replace: true });
       });
     else alert("フォーマットが正しくありません");
@@ -73,17 +74,20 @@ export const CreateDocument: FC = (): JSX.Element => {
 
   useEffect(() => {
     if (location.state) {
-      const myState: documentObject = location.state as documentObject;
-      setId(myState.id);
-      setTitle(myState.title);
-      if (myState.markdownContent?.lead) setLead(myState.markdownContent.lead);
-      if (myState.markdownContent?.procedure)
-        setProcedure(myState.markdownContent.procedure);
-      setQuestion(myState.markdownContent.question);
-      const tmp: [string, boolean, string][] = myState.options.map(
-        ({ label, next }) => [label, true, next]
-      );
-      setLabels(tmp);
+      const queryId: string = location.state as string;
+      getDocument(queryId).then((doc: documentObject) => {
+        const { id, title, markdownContent, options } = doc;
+        const { lead, procedure, question } = markdownContent;
+        setId(id);
+        setTitle(title);
+        if (lead !== undefined) setLead(lead);
+        if (procedure !== undefined) setProcedure(procedure);
+        setQuestion(question);
+        const tmp: [string, boolean, string][] = options.map(
+          ({ label, next }) => [label, true, next]
+        );
+        setLabels(tmp);
+      });
     }
   }, []);
 
